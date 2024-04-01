@@ -1,7 +1,7 @@
 FROM ubuntu:22.04 as tomcat
 
 ARG TOMCAT_VERSION=9.0.86
-ARG CORS_ENABLED=false
+ARG CORS_ENABLED=true
 ARG CORS_ALLOWED_ORIGINS=*
 ARG CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,HEAD,OPTIONS
 ARG CORS_ALLOWED_HEADERS=*
@@ -102,6 +102,7 @@ ENV CONFIG_OVERRIDES_DIR=/opt/config_overrides
 ENV HEALTHCHECK_URL=http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png
 
 EXPOSE 8080
+EXPOSE 8443
 
 WORKDIR /tmp
 
