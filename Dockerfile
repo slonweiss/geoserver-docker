@@ -56,23 +56,41 @@ RUN apt purge -y  \
 
 FROM tomcat as download
 
-ARG GS_VERSION=2.24.1
+ARG GS_VERSION=2.25.0
 ARG GS_BUILD=release
 ARG WAR_ZIP_URL=https://downloads.sourceforge.net/project/geoserver/GeoServer/${GS_VERSION}/geoserver-${GS_VERSION}-war.zip
+ARG JDBC_CONFIG_URL=https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.26-SNAPSHOT-jdbcconfig-plugin.zip
+ARG JDBC_STORE_URL=https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.26-SNAPSHOT-jdbcstore-plugin.zip
 ENV GEOSERVER_VERSION=$GS_VERSION
 ENV GEOSERVER_BUILD=$GS_BUILD
 
 WORKDIR /tmp
 
 RUN echo "Downloading GeoServer ${GS_VERSION} ${GS_BUILD}" \
-    && wget -q -O /tmp/geoserver.zip $WAR_ZIP_URL \
+    && wget -q -O /tmp/geoserver.zip $WAR_ZIP_URL
+
+RUN echo "Unzipping GeoServer" \
     && unzip geoserver.zip geoserver.war -d /tmp/ \
     && unzip -q /tmp/geoserver.war -d /tmp/geoserver \
     && rm /tmp/geoserver.war
 
+RUN echo "Downloading JDBCConfig plugin" \
+    && wget -q -O /tmp/jdbcconfig.zip $JDBC_CONFIG_URL \
+    && echo "Unzipping JDBCConfig plugin" \
+    && unzip -q -o /tmp/jdbcconfig.zip -d /tmp/geoserver/WEB-INF/lib/ \
+    && rm /tmp/jdbcconfig.zip
+
+RUN echo "Downloading JDBCStore plugin" \
+    && wget -q -O /tmp/jdbcstore.zip $JDBC_STORE_URL \
+    && echo "JDBCStore plugin downloaded to /tmp/jdbcstore.zip" \
+    && ls -l /tmp/jdbcstore.zip \
+    && echo "Unzipping JDBCStore plugin" \
+    && unzip -q -o /tmp/jdbcstore.zip -d /tmp/geoserver/WEB-INF/lib/ \
+    && rm /tmp/jdbcstore.zip
+
 FROM tomcat as install
 
-ARG GS_VERSION=2.24.1
+ARG GS_VERSION=2.25.0
 ARG GS_BUILD=release
 ARG STABLE_PLUGIN_URL=https://downloads.sourceforge.net/project/geoserver/GeoServer/${GS_VERSION}/extensions
 ARG COMMUNITY_PLUGIN_URL=''
@@ -86,7 +104,7 @@ ENV GEOSERVER_BUILD=$GS_BUILD
 ENV GEOSERVER_DATA_DIR=/opt/geoserver_data/
 ENV GEOSERVER_REQUIRE_FILE=$GEOSERVER_DATA_DIR/global.xml
 ENV GEOSERVER_LIB_DIR=$CATALINA_HOME/webapps/geoserver/WEB-INF/lib/
-ENV INSTALL_EXTENSIONS=false
+ENV INSTALL_EXTENSIONS=true
 ENV WAR_ZIP_URL=$WAR_ZIP_URL
 ENV STABLE_EXTENSIONS=''
 ENV STABLE_PLUGIN_URL=$STABLE_PLUGIN_URL
@@ -151,3 +169,10 @@ WORKDIR /opt
 
 HEALTHCHECK --interval=1m --timeout=20s --retries=3 \
   CMD curl --fail $HEALTHCHECK_URL || exit 1
+
+# Add the install-extensions.sh script
+COPY install-extensions.sh /opt/
+
+# Run the script to install extensions
+RUN chmod +x /opt/install-extensions.sh \
+    && /opt/install-extensions.sh
