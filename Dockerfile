@@ -57,7 +57,7 @@ RUN apt purge -y  \
 
 FROM tomcat as download
 
-ARG GS_VERSION=2.26.0
+ARG GS_VERSION=2.25.0
 ARG GS_BUILD=release
 ARG WAR_ZIP_URL=https://downloads.sourceforge.net/project/geoserver/GeoServer/${GS_VERSION}/geoserver-${GS_VERSION}-war.zip
 ARG JDBC_CONFIG_URL=https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.26-SNAPSHOT-jdbcconfig-plugin.zip
