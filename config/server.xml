@@ -25,17 +25,12 @@
     <Listener className="org.apache.catalina.security.SecurityListener" />
     -->
     <!-- APR library loader. Documentation at /docs/apr.html -->
+    <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
     <!-- Prevent memory leaks due to use of particular java/javax APIs-->
     <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
     <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
     <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
-   <!-- Define an SSL/TLS HTTP/1.1 Connector on port 8443 -->
-<Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true" scheme="https" secure="true"
-    clientAuth="false" sslProtocol="TLS"
-    keystoreFile="/opt/geoserver_data/etc/tls/keystore.jks"
-    keystoreType="JKS" keystorePass="changeit"
-    truststoreFile="/opt/geoserver_data/etc/tls/keystore.jks"
-    truststoreType="JKS" truststorePass="changeit" />
+
     <!-- Global JNDI resources
          Documentation at /docs/jndi-resources-howto.html
     -->

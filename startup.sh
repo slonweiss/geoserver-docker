@@ -1,6 +1,52 @@
 #!/bin/bash
 echo "Welcome to GeoServer $GEOSERVER_VERSION"
 
+# Create directories and write properties files
+mkdir -p /opt/geoserver_data/jdbcconfig /opt/geoserver_data/jdbcstore
+
+cat <<EOF > /opt/geoserver_data/jdbcconfig/jdbcconfig.properties
+#Wed May 22 18:22:58 GMT 2024
+initdb=false
+pool.timeBetweenEvictionRunsMillis=-1L
+import=false
+pool.poolPreparedStatements=true
+pool.testWhileIdle=false
+pool.validationQuery=SELECT now()
+pool.minIdle=4
+enabled=true
+pool.maxOpenPreparedStatements=50
+password=${DB_PASSWORD}
+jdbcUrl=jdbc:postgresql://${DB_HOST}\:5432/${DB_NAME_JDBCCONFIG}
+driverClassName=org.postgresql.Driver
+pool.maxActive=10
+initScript=jdbcconfig/scripts/initdb.postgres.sql
+debugMode=false
+pool.testOnBorrow=true
+username=${DB_USER}
+EOF
+
+cat <<EOF > /opt/geoserver_data/jdbcstore/jdbcstore.properties
+#Wed May 22 18:22:48 GMT 2024
+initdb=false
+pool.timeBetweenEvictionRunsMillis=-1L
+deleteDestinationOnRename=true
+import=false
+pool.poolPreparedStatements=true
+pool.testWhileIdle=false
+pool.validationQuery=SELECT now()
+pool.minIdle=4
+ignoreDirs=data,jdbcstore,jdbcconfig,temp,tmp,logs
+enabled=true
+pool.maxOpenPreparedStatements=50
+password=${DB_PASSWORD}
+jdbcUrl=jdbc:postgresql://${DB_HOST}\:5432/${DB_NAME_JDBCSTORE}
+driverClassName=org.postgresql.Driver
+pool.maxActive=10
+initScript=jdbcstore/scripts/init.postgres.sql
+pool.testOnBorrow=true
+username=${DB_USER}
+EOF
+
 # function that can be used to copy a custom config file to the catalina conf dir
 function copy_custom_config() {
   CONFIG_FILE=$1
@@ -14,6 +60,7 @@ function copy_custom_config() {
     envsubst < "${CONFIG_DIR}"/"${CONFIG_FILE}" > "${CATALINA_HOME}/conf/${CONFIG_FILE}"
   fi
 }
+
 
 ## Skip demo data
 if [ "${SKIP_DEMO_DATA}" = "true" ]; then
@@ -34,7 +81,6 @@ if [ "${ROOT_WEBAPP_REDIRECT}" = "true" ]; then
 %>
 EOF
 fi
-
 
 ## install release data directory if needed before starting tomcat
 if [ ! -z "$GEOSERVER_REQUIRE_FILE" ] && [ ! -f "$GEOSERVER_REQUIRE_FILE" ]; then

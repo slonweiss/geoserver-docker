@@ -17,6 +17,7 @@ ENV CORS_ALLOWED_METHODS=$CORS_ALLOWED_METHODS
 ENV CORS_ALLOWED_HEADERS=$CORS_ALLOWED_HEADERS
 ENV CORS_ALLOW_CREDENTIALS=$CORS_ALLOW_CREDENTIALS
 ENV DEBIAN_FRONTEND=noninteractive
+ENV GEOSERVER_CSRF_DISABLED=true
 
 # see https://docs.geoserver.org/stable/en/user/production/container.html
 ENV CATALINA_OPTS="\$EXTRA_JAVA_OPTS \
@@ -56,7 +57,7 @@ RUN apt purge -y  \
 
 FROM tomcat as download
 
-ARG GS_VERSION=2.25.0
+ARG GS_VERSION=2.26.0
 ARG GS_BUILD=release
 ARG WAR_ZIP_URL=https://downloads.sourceforge.net/project/geoserver/GeoServer/${GS_VERSION}/geoserver-${GS_VERSION}-war.zip
 ARG JDBC_CONFIG_URL=https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.26-SNAPSHOT-jdbcconfig-plugin.zip
@@ -120,7 +121,6 @@ ENV CONFIG_OVERRIDES_DIR=/opt/config_overrides
 ENV HEALTHCHECK_URL=http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png
 
 EXPOSE 8080
-EXPOSE 8443
 
 WORKDIR /tmp
 
