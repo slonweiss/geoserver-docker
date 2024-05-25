@@ -146,11 +146,11 @@ if [ "${CORS_ENABLED}" = "true" ]; then
     <filter-mapping>\n\
       <filter-name>DockerGeoServerCorsFilter</filter-name>\n\
       <url-pattern>/*</url-pattern>\n\
-    </filter-mapping>" "$CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml"\n\
+    </filter-mapping>\n\
     <context-param>\n\
-      <param-name>GEOSERVER_CSRF_DISABLE</param-name>\n\
+      <param-name>GEOSERVER_CSRF_DISABLED</param-name>\n\
       <param-value>true</param-value>\n\
-    </context-param>;
+    </context-param>" "$CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml";
   fi
 fi
 

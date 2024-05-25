@@ -57,10 +57,10 @@ RUN apt purge -y  \
 
 FROM tomcat as download
 
-ARG GS_VERSION=2.25.0
+ARG GS_VERSION=2.25.1
 ARG GS_BUILD=release
 ARG WAR_ZIP_URL=https://downloads.sourceforge.net/project/geoserver/GeoServer/${GS_VERSION}/geoserver-${GS_VERSION}-war.zip
-ARG JDBC_CONFIG_URL=https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.26-SNAPSHOT-jdbcconfig-plugin.zip
+ARG JDBC_CONFIG_URL=https://build.geoserver.org/geoserver/2.25.x/community-latest/geoserver-2.25-SNAPSHOT-jdbcconfig-plugin.zip
 ARG JDBC_STORE_URL=https://build.geoserver.org/geoserver/main/community-latest/geoserver-2.26-SNAPSHOT-jdbcstore-plugin.zip
 ENV GEOSERVER_VERSION=$GS_VERSION
 ENV GEOSERVER_BUILD=$GS_BUILD
@@ -75,11 +75,11 @@ RUN echo "Unzipping GeoServer" \
     && unzip -q /tmp/geoserver.war -d /tmp/geoserver \
     && rm /tmp/geoserver.war
 
-RUN echo "Downloading JDBCConfig plugin" \
-    && wget -q -O /tmp/jdbcconfig.zip $JDBC_CONFIG_URL \
-    && echo "Unzipping JDBCConfig plugin" \
-    && unzip -q -o /tmp/jdbcconfig.zip -d /tmp/geoserver/WEB-INF/lib/ \
-    && rm /tmp/jdbcconfig.zip
+# RUN echo "Downloading JDBCConfig plugin" \
+#     && wget -q -O /tmp/jdbcconfig.zip $JDBC_CONFIG_URL \
+#     && echo "Unzipping JDBCConfig plugin" \
+#     && unzip -q -o /tmp/jdbcconfig.zip -d /tmp/geoserver/WEB-INF/lib/ \
+#     && rm /tmp/jdbcconfig.zip
 
 RUN echo "Downloading JDBCStore plugin" \
     && wget -q -O /tmp/jdbcstore.zip $JDBC_STORE_URL \
@@ -91,7 +91,7 @@ RUN echo "Downloading JDBCStore plugin" \
 
 FROM tomcat as install
 
-ARG GS_VERSION=2.25.0
+ARG GS_VERSION=2.25.1
 ARG GS_BUILD=release
 ARG STABLE_PLUGIN_URL=https://downloads.sourceforge.net/project/geoserver/GeoServer/${GS_VERSION}/extensions
 ARG COMMUNITY_PLUGIN_URL=''
@@ -113,7 +113,7 @@ ENV COMMUNITY_EXTENSIONS=''
 ENV COMMUNITY_PLUGIN_URL=$COMMUNITY_PLUGIN_URL
 ENV ADDITIONAL_LIBS_DIR=/opt/additional_libs/
 ENV ADDITIONAL_FONTS_DIR=/opt/additional_fonts/
-ENV SKIP_DEMO_DATA=false
+ENV SKIP_DEMO_DATA=true
 ENV ROOT_WEBAPP_REDIRECT=false
 ENV POSTGRES_JNDI_ENABLED=false
 ENV CONFIG_DIR=/opt/config
