@@ -1,3 +1,4 @@
+# Dockerfile
 FROM ubuntu:24.04 as tomcat
 
 ARG TOMCAT_VERSION=9.0.89
@@ -10,7 +11,7 @@ ARG CORS_ALLOW_CREDENTIALS=false
 # Environment variables
 ENV TOMCAT_VERSION=$TOMCAT_VERSION
 ENV CATALINA_HOME=/opt/apache-tomcat-${TOMCAT_VERSION}
-ENV EXTRA_JAVA_OPTS="-Xms256m -Xmx1g"
+ENV EXTRA_JAVA_OPTS="-Xms128m -Xmx756m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseParNewGC"
 ENV CORS_ENABLED=$CORS_ENABLED
 ENV CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS
 ENV CORS_ALLOWED_METHODS=$CORS_ALLOWED_METHODS
@@ -25,7 +26,6 @@ ENV CATALINA_OPTS="\$EXTRA_JAVA_OPTS \
     -Dfile.encoding=UTF-8 \
     -Djavax.servlet.request.encoding=UTF-8 \
     -Djavax.servlet.response.encoding=UTF-8 \
-    -D-XX:SoftRefLRUPolicyMSPerMB=36000 \
     -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
     -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
     -Dorg.geotools.coverage.jaiext.enabled=true"
