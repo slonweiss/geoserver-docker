@@ -7,10 +7,10 @@ mkdir -p /opt/geoserver_data/jdbcconfig /opt/geoserver_data/jdbcstore
 cat <<EOF > /opt/geoserver_data/jdbcconfig/jdbcconfig.properties
 #Wed May 22 18:22:58 GMT 2024
 initdb=false
-pool.timeBetweenEvictionRunsMillis=-1L
+pool.timeBetweenEvictionRunsMillis=15000
 import=false
 pool.poolPreparedStatements=true
-pool.testWhileIdle=false
+pool.testWhileIdle=true
 pool.validationQuery=SELECT now()
 pool.minIdle=4
 enabled=true
@@ -21,18 +21,19 @@ driverClassName=org.postgresql.Driver
 pool.maxActive=10
 initScript=jdbcconfig/scripts/initdb.postgres.sql
 debugMode=false
-pool.testOnBorrow=true
+pool.testOnBorrow=false
 username=${DB_USER}
+repopulate=false
 EOF
 
 cat <<EOF > /opt/geoserver_data/jdbcstore/jdbcstore.properties
 #Wed May 22 18:22:48 GMT 2024
 initdb=false
-pool.timeBetweenEvictionRunsMillis=-1L
+pool.timeBetweenEvictionRunsMillis=15000
 deleteDestinationOnRename=true
 import=false
 pool.poolPreparedStatements=true
-pool.testWhileIdle=false
+pool.testWhileIdle=true
 pool.validationQuery=SELECT now()
 pool.minIdle=4
 ignoreDirs=data,jdbcstore,jdbcconfig,temp,tmp,logs
@@ -43,8 +44,17 @@ jdbcUrl=jdbc:postgresql://${DB_HOST}\:5432/${DB_NAME_JDBCSTORE}
 driverClassName=org.postgresql.Driver
 pool.maxActive=10
 initScript=jdbcstore/scripts/init.postgres.sql
-pool.testOnBorrow=true
+pool.testOnBorrow=false
 username=${DB_USER}
+EOF
+
+# Create logging.xml with specified content
+cat <<EOF > /opt/geoserver_data/logging.xml
+<logging>
+  <level>DEFAULT_LOGGING.properties</level>
+  <location>logs/geoserver.log</location>
+  <stdOutLogging>true</stdOutLogging>
+</logging>
 EOF
 
 # function that can be used to copy a custom config file to the catalina conf dir
