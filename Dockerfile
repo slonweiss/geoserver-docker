@@ -11,7 +11,7 @@ ARG CORS_ALLOW_CREDENTIALS=false
 # Environment variables
 ENV TOMCAT_VERSION=$TOMCAT_VERSION
 ENV CATALINA_HOME=/opt/apache-tomcat-${TOMCAT_VERSION}
-ENV EXTRA_JAVA_OPTS="-Xms128m -Xmx756m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseParNewGC"
+ENV EXTRA_JAVA_OPTS="-Xms256m -Xmx2g"
 ENV CORS_ENABLED=$CORS_ENABLED
 ENV CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS
 ENV CORS_ALLOWED_METHODS=$CORS_ALLOWED_METHODS
@@ -26,6 +26,8 @@ ENV CATALINA_OPTS="\$EXTRA_JAVA_OPTS \
     -Dfile.encoding=UTF-8 \
     -Djavax.servlet.request.encoding=UTF-8 \
     -Djavax.servlet.response.encoding=UTF-8 \
+    -D-XX:SoftRefLRUPolicyMSPerMB=36000 \
+    -D-XX:+UseParNewGC \
     -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
     -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
     -Dorg.geotools.coverage.jaiext.enabled=true"
@@ -33,7 +35,7 @@ ENV CATALINA_OPTS="\$EXTRA_JAVA_OPTS \
 # init
 RUN apt update \
     && apt -y upgrade \
-    && apt install -y --no-install-recommends openssl unzip gdal-bin wget curl openjdk-11-jdk gettext \
+    && apt install -y --no-install-recommends openssl unzip gdal-bin wget curl openjdk-17-jdk gettext \
     && apt clean \
     && rm -rf /var/cache/apt/* \
     && rm -rf /var/lib/apt/lists/*
